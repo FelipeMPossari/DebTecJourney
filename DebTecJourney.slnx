@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/api/">
+    <Project Path="api/DebTecJourney.Api.csproj" />
+  </Folder>
+</Solution>
