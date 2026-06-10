@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { ProgressBar } from './ProgressBar';
-import { colors } from '../theme/colors';
+import { AppColors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeProvider';
 import { ModulePreview } from '../types/learning';
 
 type ModuleCardProps = {
@@ -8,6 +9,8 @@ type ModuleCardProps = {
 };
 
 export function ModuleCard({ module }: ModuleCardProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const completedLessons = module.lessons.filter((lesson) => lesson.status === 'completed').length;
   const availableLessons = module.lessons.filter((lesson) => lesson.status === 'available').length;
 
@@ -34,56 +37,58 @@ export function ModuleCard({ module }: ModuleCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    gap: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    backgroundColor: colors.surface,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  indexBadge: {
-    width: 42,
-    height: 42,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 21,
-    backgroundColor: colors.primaryDark,
-  },
-  indexText: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  headerText: {
-    flex: 1,
-    gap: 4,
-  },
-  title: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  description: {
-    color: colors.muted,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  footerText: {
-    color: colors.muted,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-});
+function createStyles(colors: AppColors) {
+  return StyleSheet.create({
+    card: {
+      gap: 14,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      backgroundColor: colors.surface,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    indexBadge: {
+      width: 42,
+      height: 42,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 21,
+      backgroundColor: colors.primaryDark,
+    },
+    indexText: {
+      color: colors.primaryOn,
+      fontSize: 18,
+      fontWeight: '800',
+    },
+    headerText: {
+      flex: 1,
+      gap: 4,
+    },
+    title: {
+      color: colors.text,
+      fontSize: 18,
+      fontWeight: '800',
+    },
+    description: {
+      color: colors.muted,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    footerText: {
+      color: colors.muted,
+      fontSize: 12,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+    },
+  });
+}

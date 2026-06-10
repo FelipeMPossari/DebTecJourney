@@ -53,6 +53,19 @@ Campos sugeridos:
 - order
 - xpReward
 
+### LessonPage
+
+Representa uma página de conteúdo dentro de uma lição. O quiz deve aparecer apenas depois que o usuário percorre as páginas da lição.
+
+Campos sugeridos:
+
+- id
+- lessonId
+- title
+- body
+- highlight
+- order
+
 ### Question
 
 Representa uma pergunta associada a uma lição.
@@ -171,4 +184,3 @@ GET /api/users/me/achievements
 - O conteúdo inicial pode ser inserido com seed no banco.
 - A primeira versão pode usar regras simples de XP.
 - O painel administrativo web pode ficar fora do MVP.
-

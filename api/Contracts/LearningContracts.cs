@@ -43,10 +43,11 @@ public sealed record LessonSummaryResponse(
     string Summary,
     int Order,
     int XpReward,
+    int PageCount,
     int QuestionCount)
 {
     public static LessonSummaryResponse From(Lesson lesson) =>
-        new(lesson.Id, lesson.ModuleId, lesson.Title, lesson.Summary, lesson.Order, lesson.XpReward, lesson.Questions.Count);
+        new(lesson.Id, lesson.ModuleId, lesson.Title, lesson.Summary, lesson.Order, lesson.XpReward, lesson.Pages.Count, lesson.Questions.Count);
 }
 
 public sealed record LessonResponse(
@@ -55,6 +56,7 @@ public sealed record LessonResponse(
     string Title,
     string Summary,
     string Content,
+    IReadOnlyList<LessonPageResponse> Pages,
     int Order,
     int XpReward,
     IReadOnlyList<QuestionResponse> Questions)
@@ -66,9 +68,22 @@ public sealed record LessonResponse(
             lesson.Title,
             lesson.Summary,
             lesson.Content,
+            lesson.Pages.OrderBy(page => page.Order).Select(LessonPageResponse.From).ToList(),
             lesson.Order,
             lesson.XpReward,
             lesson.Questions.Select(QuestionResponse.From).ToList());
+}
+
+public sealed record LessonPageResponse(
+    Guid Id,
+    Guid LessonId,
+    string Title,
+    string Body,
+    string Highlight,
+    int Order)
+{
+    public static LessonPageResponse From(LessonPage page) =>
+        new(page.Id, page.LessonId, page.Title, page.Body, page.Highlight, page.Order);
 }
 
 public sealed record QuestionResponse(

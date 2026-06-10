@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
-    "expo": "~56.0.8",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "~56.0.9",
+    "expo-local-authentication": "~56.0.4",
     "expo-status-bar": "~56.0.4",
+    "lucide-react-native": "0.577.0",
     "react": "19.2.3",
-    "react-native": "0.85.3"
+    "react-native": "0.85.3",
+    "react-native-svg": "15.15.4"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
@@ -14,9 +18,11 @@
   },
   "scripts": {
     "start": "expo start",
+    "start:usb": "expo start --localhost --clear",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
   },
   "private": true
 }

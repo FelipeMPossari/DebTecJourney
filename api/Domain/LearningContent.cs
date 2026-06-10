@@ -22,9 +22,18 @@ public sealed record Lesson(
     string Title,
     string Summary,
     string Content,
+    IReadOnlyList<LessonPage> Pages,
     int Order,
     int XpReward,
     IReadOnlyList<Question> Questions);
+
+public sealed record LessonPage(
+    Guid Id,
+    Guid LessonId,
+    string Title,
+    string Body,
+    string Highlight,
+    int Order);
 
 public sealed record Question(
     Guid Id,

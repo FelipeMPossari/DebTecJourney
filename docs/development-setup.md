@@ -65,6 +65,77 @@ cd mobile
 npx expo start
 ```
 
+### Android via USB
+
+Para testar o aplicativo em um celular Android via USB, é necessário ter o Android SDK Platform Tools instalado.
+
+Status neste ambiente:
+
+- Android SDK Platform Tools instalado: `37.0.0`
+- `adb.exe` instalado em:
+
+```text
+C:\Users\felip\AppData\Local\Microsoft\WinGet\Packages\Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe\platform-tools\adb.exe
+```
+
+Se `adb` não for reconhecido em um terminal já aberto, reinicie o terminal ou use o caminho completo acima.
+
+Se o Expo mostrar erro dizendo que não encontrou o Android SDK, configure as variáveis de ambiente do usuário:
+
+```powershell
+$platformTools = "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe\platform-tools"
+$sdkRoot = Split-Path $platformTools -Parent
+
+[Environment]::SetEnvironmentVariable('ANDROID_HOME', $sdkRoot, 'User')
+[Environment]::SetEnvironmentVariable('ANDROID_SDK_ROOT', $sdkRoot, 'User')
+
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+[Environment]::SetEnvironmentVariable('Path', "$userPath;$platformTools", 'User')
+```
+
+Depois disso, reinicie o terminal ou o VS Code.
+
+Comandos úteis:
+
+```powershell
+adb devices
+adb reverse tcp:5228 tcp:5228
+cd mobile
+npm.cmd start -- --localhost
+```
+
+Se o aparelho aparecer como `unauthorized`, desbloqueie o celular e aceite a solicitação "Permitir depuração USB?".
+
+O comando `adb reverse tcp:5228 tcp:5228` permite que o Android conectado via USB acesse a API local do computador em `http://localhost:5228`.
+
+Para reiniciar o Expo de forma limpa pelo USB:
+
+```powershell
+adb devices
+adb reverse tcp:8081 tcp:8081
+cd mobile
+$env:NODE_OPTIONS = '--dns-result-order=ipv4first'
+npm.cmd start -- --localhost --clear
+```
+
+Depois que o Metro abrir, pressione `a`. Se o React Native DevTools disser que não há apps compatíveis conectados, primeiro confirme se o app abriu no celular; logs de erro de JavaScript aparecem no terminal do Metro.
+
+O Expo Go do SDK 56 usa Hermes por padrão. Para confirmar se o DevTools consegue enxergar a aplicação, execute com o app aberto:
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:8081/json/list
+```
+
+O retorno precisa listar uma VM `Hermes`. Se vier vazio, recarregue o app com `r` no terminal do Expo ou reinicie o Metro com `npm.cmd run start:usb`.
+
+Se o celular mostrar `java.io.IOException: Failed to download remote update`, confirme no computador:
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:8081/status
+```
+
+Esse endereço precisa responder `200`. Se responder apenas em `localhost`, mantenha o `NODE_OPTIONS` acima antes de iniciar o Expo.
+
 ### Backend
 
 Depois de instalar o .NET SDK, a API pode ser executada com:

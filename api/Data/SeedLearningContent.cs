@@ -38,7 +38,37 @@ public static class SeedLearningContent
                             FoundationsModuleId,
                             "O que é dívida técnica?",
                             "Entenda a metáfora da dívida aplicada a decisões de software.",
-                            "Dívida técnica surge quando uma decisão acelera a entrega no curto prazo, mas cria custo futuro de manutenção, evolução ou qualidade. Ela pode ser consciente ou acidental, aceitável ou perigosa. O ponto importante é que a equipe precisa enxergar essa dívida, entender seus juros e decidir quando pagar.",
+                            "Dívida técnica surge quando uma decisão acelera a entrega no curto prazo, mas cria custo futuro de manutenção, evolução ou qualidade.",
+                            [
+                                new LessonPage(
+                                    Guid.Parse("d3ce3233-4a34-4d73-bb17-a06cb87c2467"),
+                                    IntroLessonId,
+                                    "A metáfora da dívida",
+                                    "Imagine que uma equipe precisa entregar uma funcionalidade rapidamente. Para cumprir o prazo, ela escolhe uma solução simples, mas menos flexível. A entrega sai, o produto avança, porém aquela escolha pode tornar mudanças futuras mais caras.",
+                                    "Dívida técnica é custo futuro criado por uma decisão técnica do presente.",
+                                    1),
+                                new LessonPage(
+                                    Guid.Parse("db9d35a3-fd6b-4f29-910c-adfbf28f0bd4"),
+                                    IntroLessonId,
+                                    "Por que ela aparece?",
+                                    "Ela pode surgir por pressa, falta de conhecimento, requisitos incertos, pressão de negócio, baixa cobertura de testes ou evolução natural do sistema. Nem sempre nasce de descuido: às vezes é uma escolha consciente para aprender mais rápido.",
+                                    "O problema não é toda dívida existir; o risco é ela ficar invisível.",
+                                    2),
+                                new LessonPage(
+                                    Guid.Parse("63b40772-2c5b-47a1-bf58-c3eaa9c35d60"),
+                                    IntroLessonId,
+                                    "Os juros técnicos",
+                                    "Quando a dívida não é acompanhada, ela cobra juros. Mudanças simples passam a exigir mais esforço, bugs ficam mais frequentes, testes quebram com facilidade e o time perde confiança para alterar o sistema.",
+                                    "Juros técnicos aparecem como lentidão, risco e retrabalho.",
+                                    3),
+                                new LessonPage(
+                                    Guid.Parse("6be209ac-6c88-44be-90c5-f51d31e06229"),
+                                    IntroLessonId,
+                                    "Boa dívida e má dívida",
+                                    "Uma dívida consciente, pequena e registrada pode ser aceitável se ajuda a validar uma ideia. Uma dívida acidental, ignorada e espalhada pelo sistema tende a se tornar perigosa. A diferença está na visibilidade, no controle e no plano de pagamento.",
+                                    "Gerenciar dívida técnica é decidir quando assumir, monitorar e pagar.",
+                                    4)
+                            ],
                             1,
                             20,
                             [
@@ -82,7 +112,30 @@ public static class SeedLearningContent
                             IdentifyingModuleId,
                             "Sinais de alerta",
                             "Reconheça sintomas comuns em sistemas com dívida acumulada.",
-                            "Dívida técnica costuma aparecer em mudanças lentas, medo de alterar partes do sistema, testes frágeis, duplicação, acoplamento excessivo e defeitos recorrentes. Esses sinais não provam sozinhos que existe dívida, mas ajudam a equipe a investigar onde o custo futuro está crescendo.",
+                            "Dívida técnica costuma aparecer em mudanças lentas, medo de alterar partes do sistema, testes frágeis, duplicação, acoplamento excessivo e defeitos recorrentes.",
+                            [
+                                new LessonPage(
+                                    Guid.Parse("45003648-5db0-4446-84a9-78dcd6d10de3"),
+                                    SymptomsLessonId,
+                                    "Mudanças ficam caras",
+                                    "Um sintoma clássico é quando pequenas alterações exigem mexer em muitos arquivos, conversar com várias áreas e testar manualmente fluxos que parecem não ter relação direta com a mudança.",
+                                    "Quanto maior o esforço para mudar pouco, maior o sinal de alerta.",
+                                    1),
+                                new LessonPage(
+                                    Guid.Parse("c5d142a4-e5fe-4108-9a59-3d83f99678a6"),
+                                    SymptomsLessonId,
+                                    "Medo de alterar",
+                                    "Quando o time evita tocar em uma parte do sistema porque qualquer mudança pode quebrar algo inesperado, pode existir acoplamento alto, testes insuficientes ou conhecimento concentrado em poucas pessoas.",
+                                    "Medo técnico é um indicador importante de dívida acumulada.",
+                                    2),
+                                new LessonPage(
+                                    Guid.Parse("c31acef5-58da-4326-b646-c563d74c7045"),
+                                    SymptomsLessonId,
+                                    "Sinais não são diagnóstico final",
+                                    "Duplicação, baixa cobertura de testes, bugs recorrentes e código difícil de entender ajudam a investigar, mas precisam de contexto. O objetivo é priorizar a dívida que realmente prejudica manutenção, qualidade ou entrega.",
+                                    "Identificar dívida é conectar sintomas a impacto real.",
+                                    3)
+                            ],
                             1,
                             25,
                             [
@@ -126,7 +179,30 @@ public static class SeedLearningContent
                             StrategiesModuleId,
                             "Pagando a dívida",
                             "Veja quando refatorar e como reduzir risco durante melhorias.",
-                            "Pagar dívida técnica não significa parar o produto para reescrever tudo. Uma estratégia saudável combina pequenas refatorações, testes de proteção, priorização por impacto e monitoramento contínuo. O melhor pagamento é aquele que reduz risco e aumenta capacidade de entrega.",
+                            "Pagar dívida técnica não significa parar o produto para reescrever tudo. Uma estratégia saudável combina pequenas refatorações, testes de proteção, priorização por impacto e monitoramento contínuo.",
+                            [
+                                new LessonPage(
+                                    Guid.Parse("8a7e9d32-c671-4cb8-bd6f-ac734c29a880"),
+                                    RefactoringLessonId,
+                                    "Pagar não é reescrever tudo",
+                                    "A reação natural diante de muita dívida é pensar em reescrever o sistema inteiro. Essa decisão pode ser necessária em casos extremos, mas frequentemente cria risco alto, custo grande e atraso na entrega de valor.",
+                                    "Refatoração incremental costuma ser mais segura que reescrita total.",
+                                    1),
+                                new LessonPage(
+                                    Guid.Parse("43712296-c74d-4352-9b72-ed8ad1dac61d"),
+                                    RefactoringLessonId,
+                                    "Comece pelo impacto",
+                                    "Nem toda dívida precisa ser paga imediatamente. Priorize áreas que mudam com frequência, geram defeitos, bloqueiam funcionalidades importantes ou aumentam muito o tempo de manutenção.",
+                                    "Boa priorização considera impacto, risco e frequência de mudança.",
+                                    2),
+                                new LessonPage(
+                                    Guid.Parse("04ba771e-c62e-4d1b-bb9d-55f61131d4e3"),
+                                    RefactoringLessonId,
+                                    "Proteja antes de mudar",
+                                    "Antes de refatorar uma área crítica, crie testes de caracterização, monitore comportamento importante e reduza o tamanho das alterações. Assim a equipe melhora o design sem trocar uma dívida conhecida por uma falha nova.",
+                                    "Testes são uma rede de proteção para pagar dívida com menos risco.",
+                                    3)
+                            ],
                             1,
                             30,
                             [
