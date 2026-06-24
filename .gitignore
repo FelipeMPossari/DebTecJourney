@@ -4,6 +4,9 @@ obj/
 .build/
 *.user
 *.suo
+api/*.db
+api/*.db-shm
+api/*.db-wal
 
 # Node / Expo
 node_modules/

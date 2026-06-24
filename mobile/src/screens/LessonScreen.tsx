@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressBar } from '../components/ProgressBar';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { answerQuestion, getLesson } from '../services/learningApi';
@@ -9,11 +10,12 @@ import { AnswerResult, Lesson, LessonPage } from '../types/learning';
 
 type LessonScreenProps = {
   lessonId: string;
+  token: string;
   onBack: () => void;
   onFinished: (lesson: Lesson, result: AnswerResult) => void;
 };
 
-export function LessonScreen({ lessonId, onBack, onFinished }: LessonScreenProps) {
+export function LessonScreen({ lessonId, token, onBack, onFinished }: LessonScreenProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
   const [lesson, setLesson] = useState<Lesson | null>(null);
@@ -35,7 +37,7 @@ export function LessonScreen({ lessonId, onBack, onFinished }: LessonScreenProps
         setSelectedAnswerId(null);
         setAnswerResult(null);
 
-        const data = await getLesson(lessonId);
+        const data = await getLesson(lessonId, token);
 
         if (isMounted) {
           setLesson(data);
@@ -56,7 +58,7 @@ export function LessonScreen({ lessonId, onBack, onFinished }: LessonScreenProps
     return () => {
       isMounted = false;
     };
-  }, [lessonId]);
+  }, [lessonId, token]);
 
   async function handleSubmit() {
     const question = lesson?.questions[0];
@@ -67,7 +69,7 @@ export function LessonScreen({ lessonId, onBack, onFinished }: LessonScreenProps
 
     try {
       setIsSubmitting(true);
-      const result = await answerQuestion(question.id, selectedAnswerId);
+      const result = await answerQuestion(question.id, selectedAnswerId, token);
       setAnswerResult(result);
     } catch {
       setError('Não foi possível enviar sua resposta. Confira a conexão com a API e tente novamente.');

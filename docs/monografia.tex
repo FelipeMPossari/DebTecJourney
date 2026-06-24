@@ -1,0 +1,234 @@
+\documentclass[12pt,openright,oneside,a4paper,brazil]{abntex2}
+
+% --- PACOTES E CONFIGURAÇÕES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{indentfirst}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[alf]{abntex2cite} % Padrão ABNT (Autor-Data)
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+% --- DADOS DO TRABALHO ---
+\titulo{Gamificação para ensino dos conceitos de dívida técnica}
+\autor{Felipe Matheus Possari}
+\local{São José do Rio Preto -- SP, Brasil}
+\orientador{Profa.\ Dra.\ Rogéria Cristiane Gratão de Souza}
+\instituicao{Universidade Estadual Paulista (UNESP) \\ Instituto de Biociências, Letras e Ciências Exatas -- IBILCE}
+\tipotrabalho{Trabalho de Conclusão de Curso}
+\preambulo{Trabalho de conclusão de curso apresentado ao curso de graduação em Ciência da Computação da Universidade Estadual Paulista (UNESP), como requisito parcial para obtenção do título de bacharel em Ciência da Computação.}
+
+\begin{document}
+
+% --- ELEMENTOS PRÉ-TEXTUAIS ---
+\imprimircapa
+\imprimirfolhaderosto
+
+% --- TEXTUAL ---
+\textual
+
+% Corpo do texto limpo para colar no modelo UNESP/abntex2.
+% Baseado no arquivo original a.txt.
+% As citações foram preservadas somente nos pontos onde já existiam \cite{...}.
+% Nenhum marcador do tipo [cite: 293] foi mantido ou inserido.
+
+\chapter{Introdução}
+
+\section{Contextualização}
+Dívida técnica é o termo criado por Ward Cunningham em 1992 \cite{cunningham1992} para descrever problemas originados durante o ciclo de vida de um software devido a atividades que não foram executadas de forma ideal. Essa negligência, motivada por pressões de prazo ou falhas de projeto, gera um passivo que acumula juros, manifestando-se como retrabalho e aumento de custos em fases posteriores do desenvolvimento de um software \cite{RIOS2018117}.
+
+Logo, é necessário integrar o aprendizado sobre a identificação e mitigação de débitos ao fluxo de formação dos futuros profissionais de software, visando prepará-los para os desafios reais da gestão de qualidade de software.
+
+Neste contexto, o uso de recursos de design de jogos em ambientes de ensino, denominado gamificação, busca converter o aprendizado tradicional em uma jornada interativa. Essa abordagem não apenas altera a dinâmica de absorção do conhecimento, mas também promove a satisfação do usuário, tornando a execução de tarefas acadêmicas uma experiência gratificante \cite{Lampropoulos2024}.
+
+\section{Justificativa}
+O ciclo de vida de um software compreende múltiplas etapas e a colaboração de diversos especialistas. Entretanto, a natureza dinâmica dos projetos, marcada por desafios técnicos e prazos rigorosos, faz com que a DT seja uma variável onipresente; mesmo sob uma ótima gestão, sua ocorrência é proporcional à complexidade do projeto.
+
+De acordo com \cite{MELO2022111483}, a gestão ineficiente da Dívida Técnica (DT) em muitos projetos decorre, primordialmente, do desconhecimento de sua existência. A mera conscientização sobre a presença da dívida otimiza significativamente o fluxo de trabalho, visto que permite à equipe compreender e mitigar os riscos que tais débitos impõem ao ciclo de vida do desenvolvimento. Em outros casos, a DT é criada de forma consciente, por conta da carência de recursos, tempo ou simplesmente pela falta de um bom design de projeto \cite{BIAZOTTO2024107375}.
+
+O acúmulo da DT compromete severamente a produtividade, consumindo aproximadamente 23\% do tempo de desenvolvimento com atividades de retrabalho, como refatorações e testes suplementares \cite{BESKER201941}. Este cenário favorece o surgimento de um efeito cascata, no qual falhas de design propagam instabilidades por todo o sistema. Estabelece-se, então, um círculo vicioso: as mesmas restrições de prazo e orçamento que originaram a dívida passam a impedir sua quitação \cite{BIAZOTTO2024107375}.
+
+A gamificação surge como uma estratégia fundamental para superar as limitações do ensino tradicional de Engenharia de Software, permitindo que o estudante experimente, de forma acelerada, o impacto crítico da DT. Ao transpor o aprendizado para um ambiente gamificado, é possível simular o ciclo de vida de um sistema onde as consequências do acúmulo de débitos que levariam meses para surgir em projetos reais manifestam-se como desafios imediatos na mecânica do jogo. Essa abordagem consolida a percepção de valor sobre técnicas de prevenção e refatoração, transformando boas práticas em hábitos instintivos. Assim, o aluno compreende que o gerenciamento da DT não é apenas uma teoria, mas uma disciplina vital para a sustentabilidade e sobrevivência de qualquer produto de software \cite{10.1145/3724389.3730780}.
+
+\section{Objetivos}
+O objetivo central deste projeto é desenvolver um aplicativo gamificado voltado à capacitação de estudantes de computação, contribuindo para a formação sólida de futuros profissionais com relação aos fundamentos de Dívida Técnica. Especificamente, a solução visa:
+\begin{itemize}
+    \item Disseminar conhecimento técnico de qualidade, ensinando conceitos, tipos, malefícios e formas de tratamento de DT.
+    \item Simular o impacto técnico e financeiro das dívidas em um ambiente gamificado.
+    \item Permitir que o usuário identifique, classifique e priorize o pagamento de débitos técnicos.
+    \item Proporcionar uma experiência prática de tomada de decisão, onde erros de projeto resultem em penalidades imediatas na mecânica do jogo, incentivando a adoção de boas práticas de software.
+\end{itemize}
+
+\section{Metodologia}
+Cinco etapas foram seguidas para elaboração do trabalho:
+
+\begin{enumerate}
+    \item \textbf{Pesquisa e Fundamentação Teórica:} Realização de levantamento bibliográfico em bases de dados científicas para consolidar a taxonomia de tipos de DT e as estratégias de gamificação estrutural e de conteúdo.
+    \item \textbf{Levantamento e Definição de Requisitos:} Identificação das métricas de DT (como esforço de refatoração e juros técnicos) que serão transpostas para a mecânica do aplicativo.
+    \item \textbf{Desenvolvimento Técnico:} Implementação do software utilizando o framework React Native. Esta etapa foca na criação de elementos de ensino propriamente dito, como documentação e vídeos que formam seções, ao fim dessas, o sistema conta com quizes para fixação do conteúdo. Como fim da jornada de aprendizado, após passar por todas as seções, o usuário passa por uma simulação, envolvendo tomadas de decisões que possuem impacto direto a atributos do projeto, podendo levá-lo tanto ao sucesso quanto ao fracasso.
+    \item \textbf{Ciclo de Testes e Avaliação:} Realização de testes com alunos de graduação para coletar \textit{feedbacks}, por meio de questionário, sobre usabilidade e eficácia pedagógica.
+    \item \textbf{Refinamento e Documentação:} Análise e interpretação dos dados obtidos nos testes para correção de \textit{bugs}\footnote{Erros ou problemas presentes em softwares} e otimização da experiência do usuário.
+\end{enumerate}
+
+\chapter{Fundamentação Teórica}
+\section{Dívida Técnica}
+O conceito de Dívida Técnica (DT) foi introduzido por Ward Cunningham em 1992, durante a conferência OOPSLA (Object-Oriented Programming, Systems, Languages \& Applications). Ele utilizou uma metáfora financeira para explicar a necessidade de agilidade no desenvolvimento de software e as consequências de decisões de projeto tomadas sob pressão de prazos. Parafraseando Cunningham \cite{cunningham1992}:
+
+\begin{quote}
+    ``Enviar código pela primeira vez é como contrair uma dívida. Uma pequena dívida acelera o desenvolvimento, desde que seja paga prontamente com uma refatoração. O perigo ocorre quando a dívida não é paga. Cada minuto gasto em código não consolidado conta como juros sobre essa dívida''.
+\end{quote}
+
+A partir dessa premissa, estabelece-se uma analogia direta com o mercado financeiro para ilustrar a necessidade de manter o equilíbrio entre velocidade e qualidade. Nesse contexto, contrair uma DT significa tomar decisões que priorizam a entrega de funcionalidades em detrimento de uma estrutura de código ideal.
+
+Assim como em um empréstimo financeiro, o benefício é imediato. No entanto, o custo dessa decisão manifesta-se na forma de juros, representados pelo esforço adicional que a equipe encontrará em manutenções futuras. Se a dívida não for quitada através da refatoração — o equivalente ao pagamento da dívida financeira, o acúmulo de juros pode eventualmente tornar a evolução do software excessivamente cara.
+
+Embora a concepção original estivesse fortemente vinculada à implementação, a literatura contemporânea expandiu o termo para várias fases do ciclo de vida do software. Sob essa perspectiva, a Dívida Técnica descreve um conjunto de artefatos incompletos ou imaturos que, criam obstáculos para evoluções e manutenções futuras. Esses obstáculos manifestam-se através do acúmulo de 'juros' representados pelo esforço excedente em manutenções e pela degradação da produtividade da equipe, o que pode levar o projeto a um ponto de crise onde a evolução do sistema torna-se impraticável. Em suma, o fenômeno deixou de ser visto apenas como uma falha no código para ser compreendido como um passivo que compromete a infraestrutura, as metodologias e as técnicas aplicadas ao projeto. \cite{BIAZOTTO2024107375,RIOS2018117}.
+
+\subsection{Taxonomia e Tipos}
+
+A Dívida Técnica manifesta-se em diversas categorias que abrangem todo o processo de engenharia de software. A literatura identifica 15 tipos de DT, sendo cada um apresentado a seguir com sua respectiva definição, listados em ordem decrescente de frequência de citação em trabalhos acadêmicos, conforme a revisão de estudos secundários realizada por \cite{RIOS2018117}.
+
+\begin{itemize}
+    \item \textbf{Dívida de Código (Code Debt):} Frequência: 100\%.
+
+    É definida como problemas encontrados na implementação que violam boas práticas, como código duplicado, métodos excessivamente complexos ou mal otimizados. Alguns autores a chamam de "Dívida de Implementação", focando na legibilidade e manutenibilidade do código-fonte.
+
+    \item \textbf{Dívida de Design (Design Debt):} Frequência: 94\%.
+
+    Refere-se a escolhas equivocadas na estrutura do software ou até mesmo falhas na mesma. Envolve o uso inadequado de padrões de projeto e a violação de princípios de engenharia, afetando a forma como os componentes do sistema se relacionam.
+
+    \item \textbf{Dívida de Teste (Test Debt):} Frequência: 83\%.
+
+    Manifesta-se através de atividades de verificação postergadas ou mal executadas. Inclui a falta de cobertura de testes, presença de testes frágeis (que não validam a lógica corretamente) e a ausência de automação em processos que exigem repetição constante.
+
+    \item \textbf{Dívida de Arquitetura (Architecture Debt):} Frequência: 72\%.
+
+    Ocorre quando decisões estruturais a nível de projeto são comprometidas. É considerada uma das dívidas mais críticas, pois sua correção exige mudanças na fundação do sistema, impactando diversos módulos simultaneamente. Alguns exemplos são falta de divisão por módulos/camadas e uso de técnologias ultrapassadas.
+
+    \item \textbf{Dívida de Documentação (Documentation Debt):} Frequência: 61\%.
+
+    Diz respeito à ausência, obsolescência ou incompletude de documentação sobre o software. Essa falta de informação dificulta o aprendizado de novos membros e aumenta o esforço necessário para entender o comportamento do sistema.
+
+    \item \textbf{Dívida de Requisitos (Requirements Debt):} Frequência: 44\%.
+
+    Refere-se ao hiato entre as necessidades ideais do negócio e o que foi efetivamente especificado ou implementado. Surge de requisitos ambíguos, incompletos ou funcionalidades que foram negligenciadas durante a fase de análise.
+
+    \item \textbf{Dívida de Infraestrutura (Infrastructure Debt):} Frequência: 39\%.
+
+    Relaciona-se a problemas em componentes de suporte que atrasam o progresso da equipe. Exemplos incluem servidores desatualizados, ferramentas de desenvolvimento obsoletas e processos de integração que não foram modernizados.
+
+    \item \textbf{Dívida de Versão (Versioning Debt):} Frequência: 28\%.
+
+    Caracteriza-se pelo uso de bibliotecas ou frameworks desatualizados. O acúmulo dessa dívida aumenta os riscos de segurança e torna futuras migrações significativamente mais complexas e custosas.
+
+    \item \textbf{Dívida de Defeito (Defect Debt):} Frequência: 28\%.
+
+    Refere-se a falhas conhecidas cuja correção foi intencionalmente adiada. A equipe opta por conviver com o comportamento incorreto para priorizar o desenvolvimento de novos recursos, acumulando retrabalho para o futuro.
+
+    \item \textbf{Dívida de Usabilidade (Usability Debt):} Frequência: 17\%.
+
+    Ocorre quando se economiza esforço no design da interface e na experiência do usuário. O resultado é um software que cumpre suas funções, mas é difícil, ineficiente ou frustrante de ser operado pelo usuário final.
+
+    \item \textbf{Dívida de Processo (Process Debt):} Frequência: 17\%.
+
+    Diz respeito a atalhos tomados no fluxo de trabalho e nas metodologias de desenvolvimento. Inclui a negligência de atividades como revisões de código ou a simplificação exacerbada de conceitos ágeis.
+
+    \item \textbf{Dívida Social (Social Debt):} Frequência: 17\%.
+
+    Refere-se a custos gerados por problemas de comunicação e colaboração dentro da equipe. Manifesta-se através da falta de conhecimento e desalinhamento de informações entre os colaboradores que levam a um atraso no desenvolvimento do produto.
+
+    \item \textbf{Dívida de Build (Build Debt):} Frequência: 11\%.
+
+    A Dívida de Build foca na ineficiência do processo de construção do software. Entre os pontos críticos dessa dívida estão a lentidão, dependência de processos manuais que poderiam ser automatizados, execução de dependências mal definidas ou a inclusão de código que não agrega valor.
+
+    \item \textbf{Dívida de Configuração (Configuration Debt):} Frequência: 6\%.
+
+    Ocorre quando a gestão de ambientes e parâmetros torna-se confusa ou manual. Isso dificulta a replicação do sistema em diferentes contextos (como teste e produção) e gera erros difíceis de rastrear.
+
+    \item \textbf{Dívida de Pessoas (People Debt):} Frequência: 6\%.
+
+    Relaciona-se à falta de treinamento ou à dependência de indivíduos específicos para o suporte de partes críticas do código. É o passivo gerado pela má gestão do conhecimento e do capital humano no projeto.
+\end{itemize}
+
+\subsection{Impactos e Malefícios}
+
+A acumulação de DT, embora muitas vezes resulte de uma decisão consciente para acelerar entregas, acarreta consequências severas para a saúde do projeto a médio e longo prazo. O principal impacto identificado na literatura é a degradação da produtividade da equipe de desenvolvimento. À medida que o passivo técnico aumenta, os desenvolvedores são forçados a despender uma parcela crescente do seu tempo na manutenção e correção de problemas antigos, em vez de trabalharem na criação de novas funcionalidades. Estima-se que, em projetos com altos níveis de DT, os programadores cheguem a gastar cerca de 23\% do seu tempo de trabalho apenas a lidar com as consequências da dívida acumulada \cite{BIAZOTTO2024107375}.
+
+Para além da perda de produtividade, a Dívida Técnica compromete diretamente os atributos de qualidade interna do software, com especial destaque para a manutenibilidade e a evolvabilidade. Um sistema sobrecarregado por dívidas torna-se rígido e frágil: pequenas alterações podem causar efeitos secundários inesperados em partes distantes do código, elevando o risco de introdução de novos defeitos. Este cenário cria um ciclo vicioso onde a equipe, sob pressão para corrigir erros e manter o cronograma, acaba por contrair novas dívidas.
+
+Outro malefício relevante é o impacto psicológico na equipe. O convívio constante com um código de baixa qualidade e a sensação de que o trabalho não progride devido a "pequenos problemas" geram desmotivação e podem levar à rotatividade de funcionários em um projeto. Em última análise, se não for gerida adequadamente, a DT pode conduzir o software a um estado de falência técnica, onde o custo de evolução supera o valor de negócio gerado, tornando o produto economicamente inviável \cite{RIOS2018117,MELO2022111483}.
+
+\subsection{Gerenciamento}
+
+O Gerenciamento de Dívida Técnica (TDM, do inglês \textit{Technical Debt Management}) compreende um conjunto de práticas e processos destinados a identificar, monitorar e controlar os itens de dívida ao longo do ciclo de vida do software. O objetivo do TDM não é eliminar a DT, mas sim torná-la estável e fornecer conscientização sobre ela para os colaboradores de um projeto. A literatura identifica oito atividades principais que compõem o ecossistema de gerenciamento:
+
+\begin{itemize}
+    \item \textbf{Identificação:} Consiste em detectar itens de DT através de análise estática de código, revisões de arquitetura, análise de requisitos ou \textit{feedback} da equipe. Sem a identificação, a dívida não pode ser tratada.
+    \item \textbf{Medição:} Envolve a quantificação do esforço necessário para corrigir a dívida e o custo extra gerado por mantê-la no sistema.
+    \item \textbf{Priorização:} Atividade crítica que define quais itens de dívida devem ser pagos primeiro, utilizando critérios como risco, custo de reparação e impacto e concorrência do mercado.
+    \item \textbf{Pagamento:} Refere-se à correção efetiva da DT, o que pode demandar diferentes ações, tais como refatoração, melhoria de testes, atualização de documentação, dentre outras.
+    \item \textbf{Monitoramento:} Acompanha a evolução da dívida ao longo do tempo, verificando se as ações de pagamento estão sendo eficazes e se as dívidas crescem de forma estável.
+    \item \textbf{Prevenção:} Foca em práticas de engenharia e processos que visam evitar a introdução de dívidas não intencionais, como a adoção de padrões de projeto e boas práticas.
+    \item \textbf{Documentação:} Envolve o registro formal dos itens de DT conhecidos, permitindo que a equipe tenha consciência do estado atual do sistema e facilite a comunicação com as partes que posteriormente pagarão a dívida.
+    \item \textbf{Comunicação:} Garante que os riscos associados à DT sejam partilhados entre desenvolvedores, designers, analistas e gestores, alinhando todos com um mesmo objetivo.
+\end{itemize}
+
+Apesar da importância dessas atividades, a sua execução manual é frequentemente negligenciada devido à pressão por prazos. Por esse motivo, a automação do TDM tem sido introduzida, buscando integrar ferramentas de análise automática no fluxo de trabalho dos desenvolvedores para tornar o gerenciamento desses pontos mais simples \cite{RIOS2018117,BIAZOTTO2024107375,Ruiz2024}.
+
+\section{Metodologias de Ensino}
+
+No ensino de Engenharia de Software (ES), observa-se que as abordagens tradicionais muitas vezes não conseguem suprir a necessidade de engajamento dos estudantes frente aos conceitos complexos da área. Como alternativa, o uso de metodologias que incentivam a participação ativa dos alunos tem se tornado objeto de estudo para melhorar o desenvolvimento de competências técnicas e comportamentais \cite{Borges2024,KREBS}.
+
+De acordo com \cite{Borges2024}, as metodologias de ensino podem ser classificadas em diferentes estratégias que visam aproximar o aluno de cenários reais da indústria. Dentre as principais abordagens identificadas na literatura para o ensino de ES, destacam-se:
+
+\begin{itemize}
+    \item \textbf{Aprendizagem Baseada em Projetos (PBL - \textit{Project Based Learning}):} Foca na aplicação prática de conhecimentos através da execução de projetos, auxiliando o estudante a compreender o ciclo de vida de desenvolvimento em contextos aplicados.
+    \item \textbf{Aprendizagem Baseada em Problemas (PrBL - \textit{Problem Based Learning}):} Centraliza o ensino na resolução de problemas específicos, estimulando o pensamento crítico e a busca por soluções.
+    \item \textbf{Simulações} Permitem que os alunos vivenciem papéis e situações reais do mercado de trabalho em um ambiente controlado, facilitando a internalização de processos e tomada de decisão.
+    \item \textbf{Jogos Educacionais (Físicos ou Digitais):} O uso de jogos, como tabuleiros para o ensino, permite que os alunos experimentem as consequências de decisões em um ambiente divertido.
+\end{itemize}
+
+A aplicação dessas metodologias em ES, no entanto, revela que a eficácia do aprendizado está ligada ao grau de engajamento e motivação gerado. Segundo \cite{TONHAO2023}, muitos estudos buscam identificar como essas estratégias podem ser potencializadas para cobrir áreas específicas do conhecimento, como testes, qualidade de código e gestão.
+
+Apesar da eficácia das metodologias ativas, a literatura aponta desafios para manter o interesse contínuo dos alunos em tópicos abstratos. Nesse sentido, surge a necessidade de integrar elementos que tornem essas experiências mais dinâmicas \cite{Lampropoulos2024}. Com base nessa demanda, a \textbf{Gamificação} é apresentada como uma camada estratégica que utiliza mecânicas de jogos para reforçar o engajamento dentro dessas metodologias, conforme será explorado na próxima seção.
+
+\subsection{Gamificação}
+
+A gamificação consiste no uso de elementos de design de jogos em contextos que não são de jogos, com o objetivo de engajar pessoas, motivar a ação, promover o aprendizado e resolver problemas. Diferente dos jogos completos, a gamificação foca na extração de componentes específicos do design de jogos para influenciar o comportamento do usuário em atividades do mundo real.
+
+Para estruturar soluções gamificadas de forma sistemática, a literatura utiliza taxonomias que classificam os elementos de jogos. Uma das abordagens mais aceitas divide esses elementos em três categorias principais, organizadas por nível de abstração:
+
+\begin{itemize}
+    \item \textbf{Dinâmicas:} São os conceitos de alto nível que governam a estrutura da experiência, como a narrativa, as restrições, as emoções e a progressão do usuário. Elas definem o objetivo das ações que o indivíduo tomará.
+    \item \textbf{Mecânicas:} Referem-se aos processos básicos que impulsionam a ação e geram engajamento, como desafios, competição, cooperação, \textit{feedback} e aquisição de recursos. As mecânicas são as regras que fazem o sistema funcionar.
+    \item \textbf{Componentes:} São as instâncias específicas das mecânicas e dinâmicas, ou seja, o que o usuário efetivamente visualiza e interage. Exemplos comuns incluem pontos, insígnias, tabelas de classificação, níveis e bens virtuais.
+\end{itemize}
+
+A eficácia dessa estratégia reside na capacidade de modificar comportamentos e aumentar o engajamento em tarefas que poderiam ser percebidas como monótonas ou complexas. Ao aplicar esses elementos de forma estratégica, cria-se um ciclo de \textit{feedback} que favorece a imersão e o aprendizado contínuo do usuário \cite{TONHAO2023}.
+
+\subsection{Gamificação Aplicada à Engenharia de Software}
+
+A aplicação de estratégias de gamificação na Engenharia de Software tem se mostrado uma abordagem eficaz para lidar com a natureza abstrata e técnica da disciplina. Segundo o estudo terciário de \cite{TONHAO2023}, a integração desses elementos no ensino visa não apenas aumentar a motivação dos estudantes, mas também simular a complexidade do desenvolvimento de sistemas reais, onde decisões precisam ser tomadas sob restrições de tempo, além de priorizar custo e qualidade.
+
+No contexto específico desta área, a literatura destaca que a aplicação dos elementos de jogos não é uniforme. A competição e a cooperação emergem como as mecânicas mais prevalentes, enquanto componentes como \textit{leaderboards}\footnote{Tabela de classificação ou placar de líderes.} e pontos são amplamente utilizados para fornecer \textit{feedback} sobre o desempenho técnico. Áreas como teste de software e gestão da qualidade são tópicos mais abordados, devido à existência de métricas objetivas que facilitam a criação de desafios.
+
+Nesse cenário, a Dívida Técnica surge como um tema ideal para a gamificação. Os conceitos de "juros" e "pagamento" possuem correlação direta com mecânicas de penalidade e recompensa, permitindo que os participantes compreendam as consequências de suas ações e atalhos técnicos em um ambiente controlado. Assim, a gamificação funciona como uma ponte entre a teoria acadêmica e a prática de mercado \cite{TONHAO2023,Khaldi2023,Ruiz2024}.
+
+\section{Trabalhos Relacionados}
+
+A literatura científica tem explorado diversas abordagens para mitigar a dificuldade de ensino de conceitos complexos na Engenharia de Software. No que tange especificamente à Dívida Técnica, alguns trabalhos destacam-se pela criação de artefatos que visam simular o ambiente de desenvolvimento e as consequências das decisões técnicas.
+
+Um trabalho de particular relevância é o proposto por \cite{KREBS}, que desenvolveu um jogo de tabuleiro educativo focado especificamente na Dívida Técnica. O jogo permite que os jogadores experienciem o ciclo de vida de um projeto, onde precisam decidir entre realizar entregas rápidas (contraindo dívida) ou investir em qualidade (pagando a dívida através de refatoração). A dinâmica foca no equilíbrio entre o tempo disponível e os "juros" acumulados, representados por penalidades que dificultam o progresso nas rodadas subsequentes. Os autores observaram que o uso do jogo facilitou a compreensão da metáfora financeira de Cunningham e aumentou o engajamento dos estudantes em comparação com métodos expositivos tradicionais.
+
+Outros estudos, mapeados na revisão de \cite{TONHAO2023}, apresentam soluções gamificadas aplicadas a áreas correlatas, como Gerenciamento de Projetos e Manutenção de Software. Nestes contextos, elementos como \textit{leaderboards} e sistemas de pontuação baseados na qualidade do código são utilizados para incentivar os alunos a evitarem atalhos técnicos. Embora existam ferramentas focadas em análise estática de código que gamificam a descoberta de código mal escrito (\textit{code smells}\footnote{Problemas estruturais no código-fonte que prejudicam sua manutenção e evolução}), essas abordagens esbarram em limitações pedagógicas e de escopo. Sob a ótica educacional, \cite{Khaldi2023} classifica implementações focadas primariamente em pontuações e medalhas como gamificação "rasa", alertando que elas carecem de uma integração mais profunda de conteúdo. Do ponto de vista técnico, a restrição dessas ferramentas à codificação ignora que falhas nas fases iniciais do projeto são causas primárias para o acúmulo de débitos. A literatura aponta uma clara escassez de soluções que abordem a Dívida de Requisitos e que forneçam métricas para ajudar a calcular o custo real e o impacto da dívida a longo prazo. \cite{Ruiz2024,MELO2022111483}
+
+Ao analisar os sucessos e limitações dos trabalhos anteriores, esta pesquisa busca propor uma ferramenta digital de ensino que aborde a Dívida Técnica de forma abrangente e imersiva. A adoção da gamificação justifica-se por sua alta eficácia no ensino superior, contexto que concentra 68\% das aplicações bem-sucedidas, sendo especialmente benéfica para áreas complexas como a da engenharia de software. Enquanto a maioria das abordagens foca predominantemente na dívida de código, esta solução visa integrar as múltiplas dimensões do fenômeno, como as dívidas de requisitos, teste e arquitetura. Através de uma transição para a "gamificação de conteúdo", a ferramenta pretende ir além dos placares tradicionais, utilizando narrativas e ciclos de \textit{feedback} para equilibrar o nível de dificuldade com a habilidade do aluno. \cite{doi:10.1177/15554120231158625,Khaldi2023}
+
+
+\newpage
+\bibliography{referencias.bib}
+
+\end{document}

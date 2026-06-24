@@ -21,7 +21,12 @@ public sealed record CourseResponse(
     IReadOnlyList<ModuleSummaryResponse> Modules)
 {
     public static CourseResponse From(Course course) =>
-        new(course.Id, course.Title, course.Description, course.Order, course.Modules.Select(ModuleSummaryResponse.From).ToList());
+        new(
+            course.Id,
+            course.Title,
+            course.Description,
+            course.Order,
+            course.Modules.OrderBy(module => module.Order).Select(ModuleSummaryResponse.From).ToList());
 }
 
 public sealed record ModuleSummaryResponse(
@@ -101,7 +106,7 @@ public sealed record QuestionResponse(
             question.Statement,
             question.Explanation,
             question.Order,
-            question.AnswerOptions.Select(AnswerOptionResponse.From).ToList());
+            question.AnswerOptions.OrderBy(option => option.Text).Select(AnswerOptionResponse.From).ToList());
 }
 
 public sealed record AnswerOptionResponse(Guid Id, string Text)
@@ -119,3 +124,25 @@ public sealed record AnswerQuestionResponse(
     string Feedback,
     string Explanation,
     int XpEarned);
+
+public sealed record CourseOverviewResponse(
+    Guid Id,
+    string Title,
+    string Description,
+    int TotalXp,
+    int CurrentLevel,
+    int DebtReducedPercent,
+    IReadOnlyList<ModuleOverviewResponse> Modules);
+
+public sealed record ModuleOverviewResponse(
+    Guid Id,
+    string Title,
+    string Description,
+    double Progress,
+    IReadOnlyList<LessonOverviewResponse> Lessons);
+
+public sealed record LessonOverviewResponse(
+    Guid Id,
+    string Title,
+    int XpReward,
+    string Status);

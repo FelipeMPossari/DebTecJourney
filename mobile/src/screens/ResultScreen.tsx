@@ -1,4 +1,5 @@
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressBar } from '../components/ProgressBar';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppColors } from '../theme/colors';
@@ -14,7 +15,7 @@ type ResultScreenProps = {
 export function ResultScreen({ lesson, result, onBackHome }: ResultScreenProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const earnedXp = lesson.xpReward + result.xpEarned;
+  const earnedXp = result.xpEarned;
 
   return (
     <SafeAreaView style={styles.safeArea}>

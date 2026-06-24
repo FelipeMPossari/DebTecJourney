@@ -1,58 +1,77 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FingerprintPattern } from 'lucide-react-native';
+import { Check, FingerprintPattern } from 'lucide-react-native';
 import {
-  KeyboardAvoidingView,
   Keyboard,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
-  TouchableWithoutFeedback,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   authenticateWithBiometrics,
+  clearRememberedCredentials,
   getBiometricAvailability,
   getBiometricPreference,
   getLastSession,
+  getRememberedCredentials,
   saveLastSession,
+  saveRememberedCredentials,
   setBiometricPreference,
 } from '../services/biometricAuth';
+import { login } from '../services/authApi';
 import { AppColors } from '../theme/colors';
 import { useTheme } from '../theme/ThemeProvider';
 import { UserSession } from '../types/auth';
 
 type LoginScreenProps = {
   onLogin: (session: UserSession) => void;
+  onOpenRegister: () => void;
 };
 
-export function LoginScreen({ onLogin }: LoginScreenProps) {
+export function LoginScreen({ onLogin, onOpenRegister }: LoginScreenProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [biometricSession, setBiometricSession] = useState<UserSession | null>(null);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canSubmit = useMemo(() => email.trim().includes('@') && password.trim().length >= 4, [email, password]);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function loadBiometricState() {
-      const [enabled, storedSession] = await Promise.all([getBiometricPreference(), getLastSession()]);
+    async function loadLoginState() {
+      const [enabled, storedSession, rememberedCredentials] = await Promise.all([
+        getBiometricPreference(),
+        getLastSession(),
+        getRememberedCredentials(),
+      ]);
 
-      if (isMounted) {
-        setIsBiometricEnabled(enabled);
-        setBiometricSession(storedSession);
+      if (!isMounted) {
+        return;
+      }
+
+      setIsBiometricEnabled(enabled);
+      setBiometricSession(storedSession);
+
+      if (rememberedCredentials) {
+        setEmail(rememberedCredentials.email);
+        setPassword(rememberedCredentials.password);
+        setRememberMe(true);
       }
     }
 
-    loadBiometricState();
+    loadLoginState();
 
     return () => {
       isMounted = false;
@@ -66,16 +85,26 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const displayName = normalizedEmail.split('@')[0] || 'Estudante';
-
-    const session = {
-      email: normalizedEmail,
-      name: displayName,
-    };
 
     setError(null);
-    await saveLastSession(session);
-    onLogin(session);
+    setIsSubmitting(true);
+
+    try {
+      const session = await login(normalizedEmail, password);
+
+      if (rememberMe) {
+        await saveRememberedCredentials({ email: normalizedEmail, password });
+      } else {
+        await clearRememberedCredentials();
+      }
+
+      await saveLastSession(session);
+      onLogin(session);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Não foi possível entrar.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleBiometricLogin() {
@@ -107,6 +136,15 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       setError('Autenticação biométrica cancelada ou não reconhecida.');
     } finally {
       setIsBiometricLoading(false);
+    }
+  }
+
+  function handleRememberMeChange() {
+    const nextValue = !rememberMe;
+    setRememberMe(nextValue);
+
+    if (!nextValue) {
+      void clearRememberedCredentials();
     }
   }
 
@@ -147,33 +185,48 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 />
               </View>
 
+              <Pressable style={styles.rememberRow} onPress={handleRememberMeChange}>
+                <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+                  {rememberMe ? <Check color={colors.primaryOn} size={16} strokeWidth={3} /> : null}
+                </View>
+                <Text style={styles.rememberText}>Lembrar de mim</Text>
+              </Pressable>
+
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
               <Pressable
                 style={({ pressed }) => [
                   styles.primaryButton,
-                  !canSubmit && styles.primaryButtonDisabled,
-                  pressed && canSubmit && styles.primaryButtonPressed,
+                  (!canSubmit || isSubmitting) && styles.primaryButtonDisabled,
+                  pressed && canSubmit && !isSubmitting && styles.primaryButtonPressed,
                 ]}
                 onPress={handleLogin}
+                disabled={!canSubmit || isSubmitting}
               >
-                <Text style={styles.primaryButtonText}>Entrar</Text>
+                <Text style={styles.primaryButtonText}>{isSubmitting ? 'Entrando...' : 'Entrar'}</Text>
               </Pressable>
 
-            {isBiometricEnabled ? (
               <Pressable
-                disabled={isBiometricLoading || !biometricSession}
-                style={({ pressed }) => [
-                  styles.biometricButton,
-                  (!biometricSession || isBiometricLoading) && styles.biometricButtonDisabled,
-                  pressed && biometricSession && !isBiometricLoading && styles.biometricButtonPressed,
-                ]}
-                onPress={handleBiometricLogin}
-                accessibilityLabel="Entrar com biometria"
+                style={({ pressed }) => [styles.secondaryButton, pressed && styles.secondaryButtonPressed]}
+                onPress={onOpenRegister}
               >
-                <FingerprintPattern color={colors.primary} size={28} strokeWidth={2.5} />
+                <Text style={styles.secondaryButtonText}>Criar conta</Text>
               </Pressable>
-            ) : null}
+
+              {isBiometricEnabled ? (
+                <Pressable
+                  disabled={isBiometricLoading || !biometricSession}
+                  style={({ pressed }) => [
+                    styles.biometricButton,
+                    (!biometricSession || isBiometricLoading) && styles.biometricButtonDisabled,
+                    pressed && biometricSession && !isBiometricLoading && styles.biometricButtonPressed,
+                  ]}
+                  onPress={handleBiometricLogin}
+                  accessibilityLabel="Entrar com biometria"
+                >
+                  <FingerprintPattern color={colors.primary} size={28} strokeWidth={2.5} />
+                </Pressable>
+              ) : null}
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -238,6 +291,32 @@ function createStyles(colors: AppColors) {
       color: colors.text,
       fontSize: 16,
     },
+    rememberRow: {
+      minHeight: 36,
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      gap: 10,
+    },
+    checkbox: {
+      width: 24,
+      height: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 6,
+      backgroundColor: colors.background,
+    },
+    checkboxChecked: {
+      borderColor: colors.primary,
+      backgroundColor: colors.primary,
+    },
+    rememberText: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: '800',
+    },
     errorText: {
       color: colors.danger,
       fontSize: 13,
@@ -260,6 +339,23 @@ function createStyles(colors: AppColors) {
     primaryButtonText: {
       color: colors.primaryOn,
       fontSize: 16,
+      fontWeight: '900',
+    },
+    secondaryButton: {
+      minHeight: 48,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      backgroundColor: colors.background,
+    },
+    secondaryButtonPressed: {
+      backgroundColor: colors.surfaceAlt,
+    },
+    secondaryButtonText: {
+      color: colors.text,
+      fontSize: 15,
       fontWeight: '900',
     },
     biometricButton: {

@@ -22,6 +22,12 @@ export type CoursePreview = {
   modules: ModulePreview[];
 };
 
+export type CourseOverview = CoursePreview & {
+  totalXp: number;
+  currentLevel: number;
+  debtReducedPercent: number;
+};
+
 export type AnswerOption = {
   id: string;
   text: string;

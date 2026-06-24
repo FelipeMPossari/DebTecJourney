@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
 import { LogOut } from 'lucide-react-native';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuButton } from '../components/MenuButton';
-import { getBiometricAvailability, getBiometricPreference, setBiometricPreference } from '../services/biometricAuth';
+import {
+  getBiometricAvailability,
+  getBiometricPreference,
+  saveLastSession,
+  setBiometricPreference,
+} from '../services/biometricAuth';
 import { AppColors, AppThemeName } from '../theme/colors';
 import { useTheme } from '../theme/ThemeProvider';
 import { UserSession } from '../types/auth';
@@ -13,6 +19,20 @@ type SettingsScreenProps = {
   onLogout: () => void;
 };
 
+const academicProfiles = [
+  'Estudante de Ciência da Computação',
+  'Estudante de Engenharia de Software',
+  'Profissional iniciante',
+];
+
+const experienceLevels = ['Iniciante', 'Intermediário', 'Avançado'];
+
+const learningGoals = [
+  'Aprender conceitos de dívida técnica',
+  'Apoiar disciplina ou TCC',
+  'Aplicar em projetos reais',
+];
+
 export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenProps) {
   const { colors, themeName, setThemeName } = useTheme();
   const styles = createStyles(colors);
@@ -21,6 +41,10 @@ export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenPro
   const [dailyReminder, setDailyReminder] = useState(false);
   const [biometricLogin, setBiometricLogin] = useState(false);
   const [biometricMessage, setBiometricMessage] = useState<string | null>(null);
+  const dailyGoalMinutes = user.dailyGoalMinutes ?? 10;
+  const academicProfile = resolveSelectedOption(user.academicProfile, academicProfiles, academicProfiles[0]);
+  const experienceLevel = resolveSelectedOption(user.experienceLevel, experienceLevels, experienceLevels[0]);
+  const learningGoal = resolveSelectedOption(user.learningGoal, learningGoals, learningGoals[0]);
 
   useEffect(() => {
     let isMounted = true;
@@ -58,6 +82,7 @@ export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenPro
       return;
     }
 
+    await saveLastSession(user);
     setBiometricLogin(true);
     setBiometricMessage('Biometria habilitada para os próximos logins.');
     await setBiometricPreference(true);
@@ -76,10 +101,10 @@ export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenPro
 
         <View style={styles.profilePanel}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user.name.slice(0, 1).toUpperCase()}</Text>
+            <Text style={styles.avatarText}>{getDisplayName(user).slice(0, 1).toUpperCase()}</Text>
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.profileName}>{user.name}</Text>
+            <Text style={styles.profileName}>{getDisplayName(user)}</Text>
             <Text style={styles.profileEmail}>{user.email}</Text>
           </View>
         </View>
@@ -103,7 +128,12 @@ export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenPro
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Aprendizado</Text>
-          <SettingRow title="Meta diária" description="10 minutos por dia" value="10 min" colors={colors} />
+          <SettingRow
+            title="Meta diária"
+            description="Tempo planejado para manter sequência"
+            value={`${dailyGoalMinutes} min`}
+            colors={colors}
+          />
           <ToggleRow
             title="Revisão inteligente"
             description="Priorizar conceitos com maior chance de esquecimento"
@@ -133,7 +163,10 @@ export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenPro
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Experiência</Text>
+          <Text style={styles.sectionTitle}>Perfil de estudo</Text>
+          <SelectedOptionGroup title="Perfil" options={academicProfiles} value={academicProfile} colors={colors} />
+          <SelectedOptionGroup title="Experiência" options={experienceLevels} value={experienceLevel} colors={colors} />
+          <SelectedOptionGroup title="Objetivo" options={learningGoals} value={learningGoal} colors={colors} />
           <SettingRow title="Conteúdo" description="Trilha selecionada" value="Dívida Técnica" colors={colors} />
         </View>
 
@@ -147,6 +180,27 @@ export function SettingsScreen({ user, onOpenMenu, onLogout }: SettingsScreenPro
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function getDisplayName(user: UserSession) {
+  const normalizedName = user.name?.trim();
+  return normalizedName || user.email.split('@')[0] || 'Estudante';
+}
+
+function resolveSelectedOption(value: string | undefined, options: string[], fallback: string) {
+  const normalizedValue = normalizeLegacyText(value ?? '');
+  return options.find((option) => normalizeLegacyText(option) === normalizedValue) ?? fallback;
+}
+
+function normalizeLegacyText(value: string) {
+  return value
+    .trim()
+    .replaceAll('CiÃªncia', 'Ciência')
+    .replaceAll('ComputaÃ§Ã£o', 'Computação')
+    .replaceAll('IntermediÃ¡rio', 'Intermediário')
+    .replaceAll('AvanÃ§ado', 'Avançado')
+    .replaceAll('dÃ­vida', 'dívida')
+    .replaceAll('tÃ©cnica', 'técnica');
 }
 
 type ThemeSelectorProps = {
@@ -224,7 +278,7 @@ type ToggleRowProps = {
   title: string;
   description: string;
   enabled: boolean;
-  onChange: (enabled: boolean) => void;
+  onChange: (enabled: boolean) => void | Promise<void>;
   colors: AppColors;
 };
 
@@ -241,8 +295,38 @@ function ToggleRow({ title, description, enabled, onChange, colors }: ToggleRowP
         thumbColor={enabled ? colors.primaryOn : colors.muted}
         trackColor={{ false: colors.surfaceAlt, true: colors.primary }}
         value={enabled}
-        onValueChange={onChange}
+        onValueChange={(nextValue) => {
+          void onChange(nextValue);
+        }}
       />
+    </View>
+  );
+}
+
+type SelectedOptionGroupProps = {
+  title: string;
+  options: string[];
+  value: string;
+  colors: AppColors;
+};
+
+function SelectedOptionGroup({ title, options, value, colors }: SelectedOptionGroupProps) {
+  const styles = createStyles(colors);
+
+  return (
+    <View style={styles.optionPanel}>
+      <Text style={styles.settingTitle}>{title}</Text>
+      <View style={styles.optionList}>
+        {options.map((option) => {
+          const isActive = option === value;
+
+          return (
+            <View key={option} style={[styles.optionChip, isActive && styles.optionChipActive]}>
+              <Text style={[styles.optionChipText, isActive && styles.optionChipTextActive]}>{option}</Text>
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -395,6 +479,40 @@ function createStyles(colors: AppColors) {
       color: colors.muted,
       fontSize: 13,
       lineHeight: 18,
+    },
+    optionPanel: {
+      gap: 10,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      backgroundColor: colors.surface,
+    },
+    optionList: {
+      gap: 8,
+    },
+    optionChip: {
+      minHeight: 40,
+      justifyContent: 'center',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      backgroundColor: colors.background,
+    },
+    optionChipActive: {
+      borderColor: colors.primary,
+      backgroundColor: colors.selectedSurface,
+    },
+    optionChipText: {
+      color: colors.muted,
+      fontSize: 13,
+      fontWeight: '800',
+      lineHeight: 18,
+    },
+    optionChipTextActive: {
+      color: colors.primary,
     },
     logoutButton: {
       minHeight: 54,

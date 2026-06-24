@@ -1,5 +1,6 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { LogOut } from 'lucide-react-native';
+import { BookOpen, Gamepad2, LogOut, Settings } from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
 import { AppColors } from '../theme/colors';
 import { useTheme } from '../theme/ThemeProvider';
 import { UserSession } from '../types/auth';
@@ -14,14 +15,16 @@ type AppDrawerProps = {
   onLogout: () => void;
 };
 
-const drawerItems: Array<{ label: string; tab: AppTab }> = [
-  { label: 'Início', tab: 'home' },
-  { label: 'Configurações', tab: 'settings' },
+const drawerItems: Array<{ label: string; tab: AppTab; icon: LucideIcon }> = [
+  { label: 'Início', tab: 'home', icon: BookOpen },
+  { label: 'Simulação', tab: 'simulation', icon: Gamepad2 },
+  { label: 'Configurações', tab: 'settings', icon: Settings },
 ];
 
 export function AppDrawer({ activeTab, isOpen, user, onClose, onNavigate, onLogout }: AppDrawerProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
+  const displayName = getDisplayName(user);
 
   function handleNavigate(tab: AppTab) {
     onNavigate(tab);
@@ -41,10 +44,10 @@ export function AppDrawer({ activeTab, isOpen, user, onClose, onNavigate, onLogo
         <View style={styles.drawer}>
           <View style={styles.profileBlock}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{user.name.slice(0, 1).toUpperCase()}</Text>
+              <Text style={styles.avatarText}>{displayName.slice(0, 1).toUpperCase()}</Text>
             </View>
             <View style={styles.profileText}>
-              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userName}>{displayName}</Text>
               <Text style={styles.userEmail}>{user.email}</Text>
             </View>
           </View>
@@ -52,6 +55,7 @@ export function AppDrawer({ activeTab, isOpen, user, onClose, onNavigate, onLogo
           <View style={styles.navList}>
             {drawerItems.map((item) => {
               const isActive = item.tab === activeTab;
+              const Icon = item.icon;
 
               return (
                 <Pressable
@@ -63,6 +67,7 @@ export function AppDrawer({ activeTab, isOpen, user, onClose, onNavigate, onLogo
                   ]}
                   onPress={() => handleNavigate(item.tab)}
                 >
+                  <Icon color={isActive ? colors.primary : colors.text} size={19} strokeWidth={2.5} />
                   <Text style={[styles.navButtonText, isActive && styles.navButtonTextActive]}>{item.label}</Text>
                 </Pressable>
               );
@@ -79,6 +84,11 @@ export function AppDrawer({ activeTab, isOpen, user, onClose, onNavigate, onLogo
       </View>
     </Modal>
   );
+}
+
+function getDisplayName(user: UserSession) {
+  const normalizedName = user.name?.trim();
+  return normalizedName || user.email.split('@')[0] || 'Estudante';
 }
 
 function createStyles(colors: AppColors) {
@@ -145,7 +155,9 @@ function createStyles(colors: AppColors) {
     },
     navButton: {
       minHeight: 48,
-      justifyContent: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
       paddingHorizontal: 14,
       borderWidth: 1,
       borderColor: colors.border,

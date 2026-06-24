@@ -1,11 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppDrawer } from './src/components/AppDrawer';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LessonScreen } from './src/screens/LessonScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
+import { RegisterScreen } from './src/screens/RegisterScreen';
 import { ResultScreen } from './src/screens/ResultScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { SimulationScreen } from './src/screens/SimulationScreen';
 import { AnswerResult, Lesson } from './src/types/learning';
 import { UserSession } from './src/types/auth';
 import { AppTab } from './src/types/navigation';
@@ -13,6 +16,7 @@ import { ThemeProvider, useTheme } from './src/theme/ThemeProvider';
 
 type AppRoute =
   | { name: 'home' }
+  | { name: 'simulation' }
   | { name: 'settings' }
   | { name: 'lesson'; lessonId: string }
   | { name: 'result'; lesson: Lesson; result: AnswerResult };
@@ -20,6 +24,7 @@ type AppRoute =
 function AppContent() {
   const { themeName } = useTheme();
   const [session, setSession] = useState<UserSession | null>(null);
+  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
   const [route, setRoute] = useState<AppRoute>({ name: 'home' });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -28,24 +33,45 @@ function AppContent() {
   }
 
   function handleNavigate(tab: AppTab) {
-    setRoute(tab === 'settings' ? { name: 'settings' } : { name: 'home' });
+    if (tab === 'settings') {
+      setRoute({ name: 'settings' });
+      return;
+    }
+
+    if (tab === 'simulation') {
+      setRoute({ name: 'simulation' });
+      return;
+    }
+
+    setRoute({ name: 'home' });
   }
 
   function handleLogout() {
     setSession(null);
+    setAuthScreen('login');
     setRoute({ name: 'home' });
     setIsDrawerOpen(false);
   }
 
+  function handleAuthenticated(nextSession: UserSession) {
+    setAuthScreen('login');
+    setSession(nextSession);
+  }
+
   function renderRoute() {
     if (!session) {
-      return <LoginScreen onLogin={setSession} />;
+      if (authScreen === 'register') {
+        return <RegisterScreen onBack={() => setAuthScreen('login')} onRegistered={handleAuthenticated} />;
+      }
+
+      return <LoginScreen onLogin={handleAuthenticated} onOpenRegister={() => setAuthScreen('register')} />;
     }
 
     if (route.name === 'lesson') {
       return (
         <LessonScreen
           lessonId={route.lessonId}
+          token={session.token}
           onBack={() => setRoute({ name: 'home' })}
           onFinished={handleFinishedLesson}
         />
@@ -60,6 +86,10 @@ function AppContent() {
       return <SettingsScreen user={session} onOpenMenu={() => setIsDrawerOpen(true)} onLogout={handleLogout} />;
     }
 
+    if (route.name === 'simulation') {
+      return <SimulationScreen onOpenMenu={() => setIsDrawerOpen(true)} />;
+    }
+
     return (
       <HomeScreen
         user={session}
@@ -69,7 +99,7 @@ function AppContent() {
     );
   }
 
-  const activeTab: AppTab = route.name === 'settings' ? 'settings' : 'home';
+  const activeTab: AppTab = route.name === 'settings' || route.name === 'simulation' ? route.name : 'home';
 
   return (
     <>
@@ -91,8 +121,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

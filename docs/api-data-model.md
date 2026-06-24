@@ -1,12 +1,32 @@
 # Modelo de Dados e API
 
-## Entidades principais
+## Decisão de Conteúdo
 
-### User
+O conteúdo didático fica em arquivos versionados e é importado pela API para o banco local.
 
-Representa o usuário do aplicativo.
+Fonte editorial atual:
 
-Campos sugeridos:
+```text
+content/technical-debt-course.json
+```
+
+Essa abordagem permite revisar lições com Git, reaproveitar material da monografia e ainda manter progresso, respostas, XP e usuários no banco de dados.
+
+## Banco Atual
+
+No ambiente de desenvolvimento, a API usa SQLite com Entity Framework Core.
+
+Arquivo gerado em execução:
+
+```text
+api/debtecjourney.db
+```
+
+Esse arquivo é recriado automaticamente se não existir.
+
+## Entidades Implementadas
+
+### ApplicationUser
 
 - id
 - name
@@ -18,21 +38,13 @@ Campos sugeridos:
 
 ### Course
 
-Representa uma trilha ou curso.
-
-Campos sugeridos:
-
 - id
 - title
 - description
 - order
 - isPublished
 
-### Module
-
-Agrupa lições dentro de uma trilha.
-
-Campos sugeridos:
+### LearningModule
 
 - id
 - courseId
@@ -42,22 +54,15 @@ Campos sugeridos:
 
 ### Lesson
 
-Representa uma lição curta.
-
-Campos sugeridos:
-
 - id
 - moduleId
 - title
+- summary
 - content
 - order
 - xpReward
 
 ### LessonPage
-
-Representa uma página de conteúdo dentro de uma lição. O quiz deve aparecer apenas depois que o usuário percorre as páginas da lição.
-
-Campos sugeridos:
 
 - id
 - lessonId
@@ -68,22 +73,13 @@ Campos sugeridos:
 
 ### Question
 
-Representa uma pergunta associada a uma lição.
-
-Campos sugeridos:
-
 - id
 - lessonId
 - statement
 - explanation
-- type
 - order
 
 ### AnswerOption
-
-Representa uma alternativa de resposta.
-
-Campos sugeridos:
 
 - id
 - questionId
@@ -93,22 +89,15 @@ Campos sugeridos:
 
 ### UserProgress
 
-Registra o progresso do usuário.
-
-Campos sugeridos:
-
 - id
 - userId
 - lessonId
 - status
 - score
+- xpEarned
 - completedAt
 
 ### UserAnswer
-
-Registra uma resposta dada pelo usuário.
-
-Campos sugeridos:
 
 - id
 - userId
@@ -117,31 +106,13 @@ Campos sugeridos:
 - isCorrect
 - answeredAt
 
-### Achievement
+## Endpoints Implementados
 
-Representa uma conquista.
+### Sistema
 
-Campos sugeridos:
-
-- id
-- title
-- description
-- icon
-- conditionType
-- conditionValue
-
-### UserAchievement
-
-Relaciona usuários e conquistas desbloqueadas.
-
-Campos sugeridos:
-
-- id
-- userId
-- achievementId
-- unlockedAt
-
-## Endpoints iniciais
+```http
+GET /api/health
+```
 
 ### Autenticação
 
@@ -151,7 +122,7 @@ POST /api/auth/login
 GET /api/auth/me
 ```
 
-### Cursos e conteúdo
+### Cursos e Conteúdo
 
 ```http
 GET /api/courses
@@ -165,22 +136,18 @@ GET /api/lessons/{lessonId}/questions
 ### Progresso
 
 ```http
-GET /api/users/me/progress
-POST /api/lessons/{lessonId}/complete
+GET /api/users/me/course-overview
 POST /api/questions/{questionId}/answer
 ```
 
-### Gamificação
+`GET /api/users/me/course-overview` retorna a trilha publicada com XP, nível, percentual de dívida reduzida e status das lições.
 
-```http
-GET /api/users/me/xp
-GET /api/users/me/achievements
-```
+`POST /api/questions/{questionId}/answer` registra a resposta, conclui a lição quando a alternativa está correta e atualiza XP do usuário.
 
-## Observações para implementação
+## Próximos Pontos
 
-- O backend deve expor dados em JSON.
-- A autenticação pode usar JWT.
-- O conteúdo inicial pode ser inserido com seed no banco.
-- A primeira versão pode usar regras simples de XP.
-- O painel administrativo web pode ficar fora do MVP.
+- Adicionar conquistas.
+- Adicionar revisão inteligente.
+- Adicionar simulação final de projeto.
+- Trocar SQLite por PostgreSQL se o projeto precisar de deploy multiusuário.
+- Criar painel administrativo somente se a edição de conteúdo via arquivo ficar insuficiente.

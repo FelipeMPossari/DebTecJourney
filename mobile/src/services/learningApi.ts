@@ -1,31 +1,18 @@
-import { AnswerResult, Lesson } from '../types/learning';
+import { AnswerResult, CourseOverview, Lesson } from '../types/learning';
+import { apiRequest } from './apiClient';
 
-const API_BASE_URL = 'http://localhost:5228/api';
-
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
-  }
-
-  return response.json() as Promise<T>;
+export function getCourseOverview(token: string) {
+  return apiRequest<CourseOverview>('/users/me/course-overview', { token });
 }
 
-export function getLesson(lessonId: string) {
-  return request<Lesson>(`/lessons/${lessonId}`);
+export function getLesson(lessonId: string, token: string) {
+  return apiRequest<Lesson>(`/lessons/${lessonId}`, { token });
 }
 
-export function answerQuestion(questionId: string, answerOptionId: string) {
-  return request<AnswerResult>(`/questions/${questionId}/answer`, {
+export function answerQuestion(questionId: string, answerOptionId: string, token: string) {
+  return apiRequest<AnswerResult>(`/questions/${questionId}/answer`, {
     method: 'POST',
+    token,
     body: JSON.stringify({ answerOptionId }),
   });
 }

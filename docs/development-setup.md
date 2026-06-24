@@ -1,84 +1,80 @@
 # Setup de Desenvolvimento
 
-Este projeto foi pensado para ser desenvolvido com:
+## Stack Atual
 
-- React Native com Expo para o aplicativo mobile
-- ASP.NET Core Web API para o backend
-- Entity Framework Core para acesso ao banco de dados
-- PostgreSQL ou SQL Server como banco relacional
+- React Native com Expo para o aplicativo mobile.
+- ASP.NET Core Web API para o backend.
+- Entity Framework Core para persistência.
+- SQLite local para desenvolvimento.
+- Conteúdo didático versionado em JSON.
 
-## Ferramentas necessárias
+## Ferramentas
 
-### Node.js
-
-Instale a versão LTS do Node.js.
-
-Em 1 de junho de 2026, a versão LTS indicada no site oficial é Node.js 24.
-
-Download oficial:
-
-https://nodejs.org/en/download
-
-Após instalar, valide:
+Valide no terminal:
 
 ```powershell
 node --version
 npm --version
-```
-
-Status neste ambiente:
-
-- Node.js instalado: `v24.16.0`
-- npm instalado: `11.13.0`
-- npx instalado: `11.13.0`
-
-Observação: se `node` ou `npm` não forem reconhecidos em um terminal já aberto, reinicie o terminal ou o VS Code para carregar o `PATH` atualizado.
-
-### .NET SDK
-
-Instale a versão LTS do .NET SDK.
-
-Em 1 de junho de 2026, a versão LTS ativa recomendada é .NET 10.
-
-Download oficial:
-
-https://dotnet.microsoft.com/download
-
-Após instalar, valide:
-
-```powershell
 dotnet --version
+adb version
 ```
 
-Status neste ambiente:
+Neste ambiente, o projeto já foi validado com:
 
-- .NET SDK instalado: `10.0.300`
+- Node.js `v24.16.0`
+- npm `11.13.0`
+- .NET SDK `10.0.300`
+- Android SDK Platform Tools `37.0.0`
 
-### Expo
+## API
 
-Depois de instalar Node.js, o aplicativo pode ser executado com Expo.
-
-Comandos:
+Executar:
 
 ```powershell
-cd mobile
-npx expo start
+cd D:\Development\DebTecJourney
+dotnet run --project api --urls "http://localhost:5228"
 ```
 
-### Android via USB
+Na primeira execução, a API cria `api/debtecjourney.db` e importa `content/technical-debt-course.json`.
 
-Para testar o aplicativo em um celular Android via USB, é necessário ter o Android SDK Platform Tools instalado.
+Para validar sem usar a saída `api/bin`, útil quando já existe uma API rodando:
 
-Status neste ambiente:
-
-- Android SDK Platform Tools instalado: `37.0.0`
-- `adb.exe` instalado em:
-
-```text
-C:\Users\felip\AppData\Local\Microsoft\WinGet\Packages\Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe\platform-tools\adb.exe
+```powershell
+dotnet build api\DebTecJourney.Api.csproj -o .build\api-validation
 ```
 
-Se `adb` não for reconhecido em um terminal já aberto, reinicie o terminal ou use o caminho completo acima.
+## Mobile
+
+Instalar dependências:
+
+```powershell
+cd D:\Development\DebTecJourney\mobile
+npm.cmd install
+```
+
+Executar:
+
+```powershell
+npm.cmd start
+```
+
+Ou via USB/local:
+
+```powershell
+npm.cmd run start:usb
+```
+
+## Android Via USB
+
+Com o celular conectado e autorizado:
+
+```powershell
+adb devices
+adb reverse tcp:8081 tcp:8081
+adb reverse tcp:5228 tcp:5228
+```
+
+O `adb reverse tcp:5228 tcp:5228` permite que o app no Android acesse a API em `http://localhost:5228`.
 
 Se o Expo mostrar erro dizendo que não encontrou o Android SDK, configure as variáveis de ambiente do usuário:
 
@@ -95,61 +91,43 @@ $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
 
 Depois disso, reinicie o terminal ou o VS Code.
 
-Comandos úteis:
+## Debug
 
-```powershell
-adb devices
-adb reverse tcp:5228 tcp:5228
-cd mobile
-npm.cmd start -- --localhost
-```
+O Expo Go do SDK 56 usa Hermes por padrão. Para abrir o React Native DevTools:
 
-Se o aparelho aparecer como `unauthorized`, desbloqueie o celular e aceite a solicitação "Permitir depuração USB?".
+1. Inicie o app no celular.
+2. Aguarde a tela do app carregar.
+3. No terminal do Expo, pressione `j`.
 
-O comando `adb reverse tcp:5228 tcp:5228` permite que o Android conectado via USB acesse a API local do computador em `http://localhost:5228`.
-
-Para reiniciar o Expo de forma limpa pelo USB:
-
-```powershell
-adb devices
-adb reverse tcp:8081 tcp:8081
-cd mobile
-$env:NODE_OPTIONS = '--dns-result-order=ipv4first'
-npm.cmd start -- --localhost --clear
-```
-
-Depois que o Metro abrir, pressione `a`. Se o React Native DevTools disser que não há apps compatíveis conectados, primeiro confirme se o app abriu no celular; logs de erro de JavaScript aparecem no terminal do Metro.
-
-O Expo Go do SDK 56 usa Hermes por padrão. Para confirmar se o DevTools consegue enxergar a aplicação, execute com o app aberto:
+Para confirmar se o DevTools enxerga o app:
 
 ```powershell
 Invoke-WebRequest http://127.0.0.1:8081/json/list
 ```
 
-O retorno precisa listar uma VM `Hermes`. Se vier vazio, recarregue o app com `r` no terminal do Expo ou reinicie o Metro com `npm.cmd run start:usb`.
+O retorno precisa listar uma VM `Hermes`.
 
-Se o celular mostrar `java.io.IOException: Failed to download remote update`, confirme no computador:
-
-```powershell
-Invoke-WebRequest http://127.0.0.1:8081/status
-```
-
-Esse endereço precisa responder `200`. Se responder apenas em `localhost`, mantenha o `NODE_OPTIONS` acima antes de iniciar o Expo.
-
-### Backend
-
-Depois de instalar o .NET SDK, a API pode ser executada com:
+Se o celular mostrar `java.io.IOException: Failed to download remote update`, force uma abertura limpa:
 
 ```powershell
-dotnet run --project api
+adb shell am force-stop host.exp.exponent
+adb shell pm clear host.exp.exponent
+adb reverse tcp:8081 tcp:8081
+adb reverse tcp:5228 tcp:5228
+adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081"
 ```
 
-## Próxima etapa técnica
+## Validação
 
-Com a estrutura inicial criada, os próximos passos são:
+API:
 
-1. Conectar a tela mobile aos endpoints da API.
-2. Criar o fluxo de lição e quiz.
-3. Adicionar persistência com banco de dados.
-4. Implementar autenticação.
-5. Salvar XP e progresso do usuário.
+```powershell
+dotnet build api\DebTecJourney.Api.csproj -o .build\api-validation
+```
+
+Mobile:
+
+```powershell
+cd mobile
+npm.cmd run typecheck
+```
