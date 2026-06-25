@@ -3,6 +3,7 @@ import { Check, FingerprintPattern } from 'lucide-react-native';
 import {
   Keyboard,
   KeyboardAvoidingView,
+  Image,
   Platform,
   Pressable,
   StyleSheet,
@@ -27,6 +28,8 @@ import { login } from '../services/authApi';
 import { AppColors } from '../theme/colors';
 import { useTheme } from '../theme/ThemeProvider';
 import { UserSession } from '../types/auth';
+
+const logoImage = require('../../assets/logoDTJourney.png');
 
 type LoginScreenProps = {
   onLogin: (session: UserSession) => void;
@@ -154,8 +157,7 @@ export function LoginScreen({ onLogin, onOpenRegister }: LoginScreenProps) {
         <TouchableWithoutFeedback accessible={false} onPress={Keyboard.dismiss}>
           <View style={styles.content}>
             <View style={styles.brandBlock}>
-              <Text style={styles.appName}>DebTec Journey</Text>
-              <Text style={styles.subtitle}>Entre para continuar sua trilha de dívida técnica.</Text>
+              <Image source={logoImage} style={styles.logo} resizeMode="contain" />
             </View>
 
             <View style={styles.formPanel}>
@@ -252,17 +254,12 @@ function createStyles(colors: AppColors) {
       paddingVertical: 34,
     },
     brandBlock: {
-      gap: 8,
+      alignItems: 'center',
     },
-    appName: {
-      color: colors.text,
-      fontSize: 34,
-      fontWeight: '900',
-    },
-    subtitle: {
-      color: colors.muted,
-      fontSize: 16,
-      lineHeight: 23,
+    logo: {
+      width: '100%',
+      maxWidth: 1000,
+      height: 230,
     },
     formPanel: {
       gap: 16,
